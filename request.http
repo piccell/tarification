@@ -1,0 +1,33 @@
+#POST http://www32.teliway.com/appli/vgtra/ws/entrant/GestionTiers/gestionTiers.php
+POST http://reso-distribution.teliway.com/appli/vreso-distribution/ws/entrant/GestionPrixTransport/gestionPrixTransport.php?version=2
+Content-Type: application/soap+xml
+
+<SOAP:Envelope
+    xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/"
+    >
+    			<SOAP:Header>
+        		<AuthentificationHeader>        
+        			<sLogin>PrixReso</sLogin>
+        			<sPassword>20SoRe03BuTion20Distri23</sPassword>        
+        		</AuthentificationHeader>        
+        	</SOAP:Header>
+    <SOAP:Body>
+        <calculerPrixTransport>
+            <expedition>
+                <sDateEnvoi>2024-01-08</sDateEnvoi>
+                <sCodeAgence>R21</sCodeAgence>
+                <sComptePayeur>R21-COTATION</sComptePayeur>
+                <sCodeProduit>MES</sCodeProduit>
+                <sTypePort>P</sTypePort>
+                <iNbUM>1</iNbUM>
+                <fPoids>5</fPoids>
+                <sCodePaysExpediteur>FR</sCodePaysExpediteur>
+                <sCPExpediteur>75001</sCPExpediteur>
+                <sLocaliteExpediteur>Paris</sLocaliteExpediteur>
+                <sCodePaysDestinataire>FR</sCodePaysDestinataire>
+                <sCPDestinataire>21000</sCPDestinataire>
+                <sLocaliteDestinataire>Dijon</sLocaliteDestinataire>
+        </expedition>
+      </calculerPrixTransport>
+    </SOAP:Body>
+</SOAP:Envelope>
