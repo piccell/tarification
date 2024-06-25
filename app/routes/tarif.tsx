@@ -62,7 +62,7 @@ export default function Tarif() {
             <p>Le {formatDateFR(parameters.shippingDate)}</p>
             <span className="fw-bold fs-6">Taxe Gasoil non incluse.</span><br/>
             <span className="fst-italic">Hors frais liés à des coûts de représentation, de prise de RDV, ou de RPV appliquée au sein du réseau. Montant transport communiqué à titre indicatif</span>
-            <h1 className="text-center mt-3">{parameters.nbUM} UM -  {parameters.weight} Kgs</h1>
+            <h1 className="text-center mt-3">{parameters.nbUM} UM - {parameters.weight} Kgs</h1>
 
             <div className="row d-flex justify-content-center mt-5">
                 <div className="col-sm-6 col-lg-6">
@@ -71,7 +71,7 @@ export default function Tarif() {
                         <li className="list-group-item bg-secondary bg-gradient text-white">
                             <div className="d-flex justify-content-between">
                                 <h3>{tarif.productName}</h3>
-                                <span style={{fontSize: "2.5rem"}}>{tarif.netAmount} €</span>
+                                <h1>{tarif.netAmount} €</h1>
                             </div>
                             { tarif.taxes.map((tax) => (
                                 <div className="d-flex justify-content-between">
