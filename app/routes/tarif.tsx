@@ -20,7 +20,8 @@ export default function Tarif() {
         const queryString = Object
             .entries(parameters)
             .filter(([key, val]) => val != null && val != undefined)
-            .map(([key, val]) => `${key}=${val}`).join('&');
+            .map(([key, val]) => `${key}=${val}`)
+            .join('&');
 
         return `/?${queryString}`
     }

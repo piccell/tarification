@@ -42,24 +42,15 @@ const badRequest = (data: TarifRequest) => json(data, { status: 400 })
 export default function Index() {
 	const data = useActionData()
 	const { countries, date, agencies, products } = useLoaderData() as LoaderData
-
-	const [isPickup, setIsPickup] = React.useState(false);
-	const defaultAgency = agencies[0]
-	const [selectedAgencyCode, setSelectedAgencyCode] = React.useState(defaultAgency.code)
-
-	const [platformZipcode, setPlatformZipcode] = React.useState(defaultAgency.zipcode)
-
-
 	const [searchParams] = useSearchParams();
+
 
 	const myShippingDate = searchParams.get("shippingDate") || date
 	const myWeight = searchParams.get("weight") || "";	
 	const myNbUM = searchParams.get("nbUM") || "";
 	const myNbPalette = searchParams.get("nbPalette") || "";
-	const myIsPickup = searchParams.get("isPickup") === "true" || isPickup
-	const mySelectedAgencyCode = searchParams.get("agencyCode") || selectedAgencyCode
+	const myIsPickup = searchParams.get("isPickup") === "on" || false
 	const myProductCode = searchParams.get("productCode") || ""
-	const myPlatformZipcode = searchParams.get("platformZipcode") || platformZipcode
 	const myCountryFrom = searchParams.get("countryFrom") || "FR"
 	const myZipcodeFrom = searchParams.get("zipcodeFrom") || ""
 	const myTownFrom = searchParams.get("townFrom") || ""
@@ -67,15 +58,19 @@ export default function Index() {
 	const myZipcodeTo = searchParams.get("zipcodeTo") || ""	
 	const myTownTo = searchParams.get("townTo") || ""
 
+	const [selectedAgency, setSelectedAgency] = React.useState(getAgencyByCode(agencies, searchParams.get("agencyCode")))	
+	const [isPickup, setIsPickup] = React.useState(myIsPickup);
+	
 	const handlePickupChanged = () => {
 		setIsPickup(!isPickup)
 	}
 
 	const handleAgencyChanged = (event: any) => {
 		const found = agencies.find(x => x.code == event.target.value)
-		const code = found === undefined ? "" : found.zipcode
 
-		setPlatformZipcode(code)
+		if (!!found) {
+			setSelectedAgency(found)
+		}
 	}
 
 	const agenciesKV = agencies.map( x => {
@@ -101,16 +96,16 @@ export default function Index() {
 				<div className="col-md-3">
 					<div className="form-check form-switch">
 						<input type="checkbox" name="isPickup" className="form-check-input" 
-							defaultChecked={myIsPickup} onChange={handlePickupChanged}/>
+							defaultChecked={isPickup} onChange={handlePickupChanged}/>
 						<label className="form-check-label">Est-ce un enlèvement ?</label>
 					</div>
 				</div>
 			</div>
 			<div className="row mb-3">
 				<div className="col-md-2">
-				<label className="form-label">Plateforme de {myIsPickup ? ("reprise"):("dépose")}</label>
+				<label className="form-label">Plateforme de {isPickup ? ("reprise"):("dépose")}</label>
 				<select name="agencyCode" className="form-select"
-					defaultValue={mySelectedAgencyCode} 
+					defaultValue={selectedAgency?.code} 
 					onChange={handleAgencyChanged}
 				>
 					{agenciesKV.map((item) =>
@@ -147,7 +142,7 @@ export default function Index() {
 				<div className="col-md-2">
 					<SelectInput name="countryFrom" label="Pays Expéditeur" value={myCountryFrom} values={countries}/>
 				</div>
-				<input type="hidden" name="zipcodeTo" value={myPlatformZipcode}/>
+				{ selectedAgency ? (<input type="hidden" name="zipcodeTo" value={selectedAgency.zipcode}/>) : (<></>)}
 				<input type="hidden" name="countryTo" value="FR"/>
 			</div>
 			):(
@@ -163,8 +158,7 @@ export default function Index() {
 						<SelectInput name="countryTo" label="Pays Destinataire" value={myCountryTo} values={countries} />
 					</div>
 				</div>
-
-				<input type="hidden" name="zipcodeFrom" value={myPlatformZipcode}/>
+				{ selectedAgency ? (<input type="hidden" name="zipcodeFrom" value={selectedAgency.zipcode}/>) : (<></>)}
 				<input type="hidden" name="countryFrom" value="FR"/>
 				</>
 			)}
@@ -176,6 +170,22 @@ export default function Index() {
 		</ValidatedForm>
 		</>
 	)
+}
+
+function getAgencyByCode(agencies: Agency[], code: string|null ): Agency | null {
+	return agencies.find(x => x.code == code) || null
+}
+
+function getZipcodeTo(zipcodeTo: string|null, isPickup: boolean, agencies: Agency[], agencyCode: string) {
+	console.log("getZipcode: agencyCode", agencyCode)
+	if (isPickup) {
+		const agency = agencies
+			.find(x => x.code == agencyCode)			
+
+		return agency?.zipcode || agencies[0].zipcode 
+	} else {
+		return zipcodeTo
+	}
 }
 
 export const loader: LoaderFunction = async () => {
@@ -206,6 +216,7 @@ export const action: ActionFunction = async ({ request }: ActionArgs) => {
 	}
 
 	const data = result.data
+
 	const params = Object.keys(data)
 		.filter((key: any) => typeof data[key] != "undefined" )
 		.map((key: any) => `${key}=${data[key]}`)
