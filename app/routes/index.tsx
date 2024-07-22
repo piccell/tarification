@@ -172,8 +172,10 @@ export default function Index() {
 	)
 }
 
-function getAgencyByCode(agencies: Agency[], code: string|null ): Agency | null {
-	return agencies.find(x => x.code == code) || null
+function getAgencyByCode(agencies: Agency[], code: string|null ): Agency | null {	
+	const first = agencies.length > 0 ? agencies[0] : null
+	
+	return agencies.find(x => x.code == code) || first
 }
 
 function getZipcodeTo(zipcodeTo: string|null, isPickup: boolean, agencies: Agency[], agencyCode: string) {
